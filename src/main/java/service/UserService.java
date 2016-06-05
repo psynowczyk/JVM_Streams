@@ -27,11 +27,11 @@ public class UserService implements UserServiceInterface {
     }
 
     public Person findOldestPerson() {
-    	final Comparator<User> comp = (u1, u2) -> Integer.compare(u1.getPersonDetails().getAge(), u2.getPersonDetails().getAge());
+    	final Comparator<Person> comp = (p1, p2) -> Integer.compare(p1.getAge(), p2.getAge());
     	return users.stream()
+    			.map(person -> person.getPersonDetails())
     			.max(comp)
-    			.get()
-    			.getPersonDetails();
+    			.get();
     }
 
     public User findUserWithLongestUsername() {
@@ -43,14 +43,14 @@ public class UserService implements UserServiceInterface {
 
     public String getNamesAndSurnamesCommaSeparatedOfAllUsersAbove18() {
     	return users.stream()
-    			.filter(user -> user.getPersonDetails().getAge() > 18)
+    			.filter(user -> user.getPersonDetails().getAge() >= 18)
     			.map(user -> user.getPersonDetails().getName() + " " + user.getPersonDetails().getSurname())
     			.collect(Collectors.joining(", "));
     }
 
     public List<String> getSortedPermissionsOfUsersWithNameStartingWith(String prefix) {
     	return users.stream()
-    			.filter(user -> user.getName().startsWith(prefix))
+    			.filter(user -> user.getPersonDetails().getName().startsWith(prefix))
     			.map(user -> user.getPersonDetails().getRole().getPermissions())
     			.flatMap(permissions -> permissions.stream())
     			.map(permission -> permission.getName())
